@@ -1,51 +1,51 @@
 ﻿using System;
 using System.Web.UI.WebControls;
-using App_Code;
 using App_Code.Connector;
 
 namespace Controls.ObjectBrowser
 {
   public partial class ObjectBrowser : System.Web.UI.UserControl
   {
-    private ObjectReader objectReader;
-
     protected void Page_Load(object sender, EventArgs e)
     {
-
-    }
-
-    public void FillControl(ConnectionOptions connectionOptions)
-    {
-      objectTree.Nodes.Clear();
-      objectReader = new ObjectReader((ConnectionOptions)Session["ConnectionOptions"]);
-
-      foreach(string db in objectReader.GetDatabaseList())
-        AddNode(db, Objects.Database.ToString(), null);
-
-      objectTree.TreeNodePopulate += objectTree_TreeNodePopulate;
-    }
-
-    private void objectTree_TreeNodePopulate(object sender, TreeNodeEventArgs e)
-    {
-      if (e.Node.Value.CompareTo(Objects.Database.ToString()) == 0)
+      if (!IsPostBack)
       {
-        e.Node.ChildNodes.Clear();
-        AddNode(Objects.Tables.ToString(), Objects.Tables.ToString(), e.Node);
-        AddNode(Objects.Views.ToString(), Objects.Views.ToString(), e.Node);
-      }
-      else if (e.Node.Value.CompareTo(Objects.Tables.ToString()) == 0)
-      {
-        e.Node.ChildNodes.Clear();
-        foreach (var table in objectReader.GetTableList(e.Node.Parent.Value))
-          AddNode(table, Objects.Tables.ToString(), e.Node);
+        objectTree.Nodes.Clear();
+        AddNode("Databases", Objects.Databases, null);
+        ObjectReader objectReader = new ObjectReader((ConnectionOptions)Session["ConnectionOptions"]);
+
+        foreach (string db in objectReader.GetDatabaseList())
+          AddNode(db, Objects.Database, objectTree.Nodes[0]);
       }
     }
 
-    private void AddNode(string text, string value, TreeNode parent)
+    protected void objectTree_TreeNodePopulate(object sender, TreeNodeEventArgs e)
     {
-      TreeNode node = new TreeNode(text, value);
-      node.PopulateOnDemand = true;
-      node.Expanded = false;
+      ObjectTreeNode node = (ObjectTreeNode) e.Node;
+      if (node.ObjectType == Objects.Database)
+      {
+        AddNode(Objects.Tables.ToString(), Objects.Tables, e.Node);
+        AddNode(Objects.Views.ToString(), Objects.Views, e.Node);
+      }
+      else if (node.ObjectType == Objects.Tables)
+      {
+        ObjectReader objectReader = new ObjectReader((ConnectionOptions)Session["ConnectionOptions"]);
+        foreach (var table in objectReader.GetTableList(e.Node.Parent.Text))
+          AddNode(table, Objects.Table, e.Node, false);
+      }
+    }
+
+    private void AddNode(string text, Objects type, TreeNode parent)
+    {
+      AddNode(text, type, parent, true);
+    }
+
+    private void AddNode(string text, Objects type, TreeNode parent, bool populateOnDemand)
+    {
+      ObjectTreeNode node = new ObjectTreeNode(text, type);
+      node.PopulateOnDemand = populateOnDemand;
+      node.SelectAction = TreeNodeSelectAction.Expand;
+      node.Collapse();
       if (parent != null)
         parent.ChildNodes.Add(node);
       else

@@ -9,6 +9,7 @@ using System.Web;
 public enum Objects
 {
   Database,
+  Databases,
   Tables,
   Table,
   Views,
