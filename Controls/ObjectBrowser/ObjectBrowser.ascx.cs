@@ -33,6 +33,12 @@ namespace Controls.ObjectBrowser
         foreach (var table in objectReader.GetTableList(e.Node.Parent.Text))
           AddNode(table, Objects.Table, e.Node, false);
       }
+      else if (node.ObjectType == Objects.Views)
+      {
+        ObjectReader objectReader = new ObjectReader((ConnectionOptions)Session["ConnectionOptions"]);
+        foreach (var view in objectReader.GetViewList(e.Node.Parent.Text))
+          AddNode(view, Objects.View, e.Node, false);
+      }
     }
 
     private void AddNode(string text, Objects type, TreeNode parent)

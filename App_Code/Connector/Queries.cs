@@ -18,6 +18,8 @@
           return "SHOW DATABASES";
         case Objects.Table:
           return string.Format("SHOW TABLES FROM {0}", parameters[0]);
+        case Objects.View:
+          return string.Format("SELECT table_name FROM information_schema.views where TABLE_SCHEMA = '{0}'", parameters[0]);
       }
 
       return string.Empty;

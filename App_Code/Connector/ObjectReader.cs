@@ -37,5 +37,17 @@ namespace App_Code.Connector
       }
       return ret;
     }
+
+    public List<string> GetViewList(string databaseName)
+    {
+      List<string> ret = new List<string>();
+      DataTable dataTable = connection.ExecuteQuery(Queries.GetQuery(Objects.View, new object[] { databaseName }));
+      if (dataTable != null)
+      {
+        foreach (DataRow row in dataTable.Rows)
+          ret.Add((string)row[0]);
+      }
+      return ret;
+    }
   }
 }
