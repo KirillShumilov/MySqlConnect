@@ -1,4 +1,6 @@
-﻿using System.Web;
+﻿using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Web;
 using System.Web.UI.WebControls;
 
 namespace App_Code.CustomTree
@@ -6,6 +8,7 @@ namespace App_Code.CustomTree
   /// <summary>
   /// Summary description for ObjectTree
   /// </summary>
+  [Designer("System.Windows.Forms.Design.ParentControlDesigner, System.Design", typeof(IDesigner))] 
   public class ObjectTreeView : TreeView
   {
     public ObjectTreeView()
